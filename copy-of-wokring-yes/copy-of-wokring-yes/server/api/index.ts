@@ -1,11 +1,5 @@
 import app from '../index.js';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export default async function handler(req: any, res: any) {
   try {
     return app(req, res);

@@ -13,7 +13,15 @@ import { getMissingEnvVars, getRuntimeConfig } from './lib/env.js';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+if (!process.env.VERCEL) {
+  app.use(express.json());
+} else {
+  // Ensure req.body is at least an object on Vercel to prevent crashes
+  app.use((req, res, next) => {
+    if (!req.body) req.body = {};
+    next();
+  });
+}
 
 const PORT = Number(process.env.PORT || 3001);
 const NODE_ENV = process.env.NODE_ENV;
@@ -583,7 +591,10 @@ app.use((error: unknown, _req: Request, res: Response, next: NextFunction) => {
   return sendError(res, 500, 'Server error', getErrorMessage(error));
 });
 
-app.use((_req, res) => sendError(res, 404, 'Route not found'));
+app.use((req, res) => {
+  console.log(`[404] Route not found: ${req.method} ${req.url}`);
+  sendError(res, 404, 'Route not found');
+});
 
 // Export for Vercel serverless
 export default app;
