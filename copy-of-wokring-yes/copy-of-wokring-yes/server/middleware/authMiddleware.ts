@@ -14,9 +14,15 @@ type JWTUserPayload = JwtPayload & {
   role?: string;
 };
 
-export interface AuthenticatedRequest extends Request {
+export type AuthenticatedRequest<
+  P = Record<string, string>,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+  Locals extends Record<string, any> = Record<string, any>
+> = Request<P, ResBody, ReqBody, ReqQuery, Locals> & {
   user?: AuthUser;
-}
+};
 
 function sendAuthError(
   res: Response,
